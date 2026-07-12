@@ -1,0 +1,27 @@
+:root {
+  --bg: #12141a;
+  --surface: #1e222c;
+  --border: #333a48;
+  --text: #e8eaf0;
+  --text-dim: #8b93a5;
+  --accent: #e8a33d;
+  --accent-contrast: #1a1405;
+  --good: #4ade80;
+  --bad: #f87171;
+
+  color-scheme: dark;
+  font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+}

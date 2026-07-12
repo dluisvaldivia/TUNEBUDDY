@@ -1,0 +1,165 @@
+import { useState } from 'react'
+import { useTuner } from './tuner/useTuner'
+import { midiToFrequency } from './tuner/notes'
+import { centsFrom, nearestString, TUNINGS, type TuningString } from './tuner/tunings'
+import './App.css'
+
+const GAUGE_RANGE = 50 // cents shown on each side of center
+const IN_TUNE_CENTS = 5
+
+const ORDINALS: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th', 6: '6th' }
+
+function Gauge({ cents }: { cents: number | null }) {
+  // Map −50…+50 cents onto a −60°…+60° needle sweep.
+  const clamped = Math.max(-GAUGE_RANGE, Math.min(GAUGE_RANGE, cents ?? 0))
+  const angle = (clamped / GAUGE_RANGE) * 60
+  const inTune = cents !== null && Math.abs(cents) <= IN_TUNE_CENTS
+
+  const ticks = []
+  for (let c = -GAUGE_RANGE; c <= GAUGE_RANGE; c += 10) {
+    const tickAngle = ((c / GAUGE_RANGE) * 60 * Math.PI) / 180
+    const isMajor = c % 50 === 0 || c === 0
+    const r1 = isMajor ? 78 : 84
+    const x1 = 100 + r1 * Math.sin(tickAngle)
+    const y1 = 100 - r1 * Math.cos(tickAngle)
+    const x2 = 100 + 92 * Math.sin(tickAngle)
+    const y2 = 100 - 92 * Math.cos(tickAngle)
+    ticks.push(
+      <line key={c} x1={x1} y1={y1} x2={x2} y2={y2} className={isMajor ? 'tick major' : 'tick'} />,
+    )
+  }
+
+  return (
+    <svg className="gauge" viewBox="0 0 200 110" role="img" aria-label="Tuning gauge">
+      <path className="gauge-arc" d="M 20.3 53.5 A 92 92 0 0 1 179.7 53.5" fill="none" />
+      {ticks}
+      <g
+        className={`needle ${cents === null ? 'idle' : ''} ${inTune ? 'in-tune' : ''}`}
+        style={{ transform: `rotate(${angle}deg)` }}
+      >
+        <line x1="100" y1="100" x2="100" y2="18" />
+        <circle cx="100" cy="100" r="5" />
+      </g>
+    </svg>
+  )
+}
+
+function App() {
+  const { status, reading, error, start, stop } = useTuner()
+  const [tuningId, setTuningId] = useState('chromatic')
+  const [lockedStringNumber, setLockedStringNumber] = useState<number | null>(null)
+
+  const tuning = TUNINGS.find((t) => t.id === tuningId) ?? TUNINGS[0]
+  const isPreset = tuning.strings.length > 0
+
+  // Locked string wins; otherwise follow whichever string the sound is nearest.
+  const lockedString = tuning.strings.find((s) => s.stringNumber === lockedStringNumber) ?? null
+  const autoString = isPreset && reading ? nearestString(reading.frequency, tuning) : null
+  const activeString: TuningString | null = isPreset ? (lockedString ?? autoString) : null
+  const targetFrequency = activeString ? midiToFrequency(activeString.midi) : null
+
+  // In preset mode the gauge is centered on the target string's note, so the
+  // needle directly says tighten (flat side) or loosen (sharp side).
+  const cents =
+    reading === null
+      ? null
+      : targetFrequency !== null
+        ? centsFrom(reading.frequency, targetFrequency)
+        : reading.cents
+
+  const inTune = cents !== null && Math.abs(cents) <= IN_TUNE_CENTS
+
+  const selectTuning = (id: string) => {
+    setTuningId(id)
+    setLockedStringNumber(null)
+  }
+
+  const toggleString = (stringNumber: number) => {
+    setLockedStringNumber((current) => (current === stringNumber ? null : stringNumber))
+  }
+
+  return (
+    <div className="tuner">
+      <header className="tuner-header">
+        <h1>TuneBuddy</h1>
+        <select
+          className="tuning-select"
+          value={tuningId}
+          onChange={(e) => selectTuning(e.target.value)}
+          aria-label="Tuning preset"
+        >
+          {TUNINGS.map((t) => (
+            <option key={t.id} value={t.id}>
+              {t.label}
+            </option>
+          ))}
+        </select>
+      </header>
+
+      <main className="tuner-display">
+        <Gauge cents={cents} />
+
+        <div className={`note ${inTune ? 'in-tune' : ''}`}>
+          {activeString ? (
+            <>
+              <span className="note-name">{activeString.note}</span>
+              <span className="note-octave">{activeString.octave}</span>
+            </>
+          ) : reading ? (
+            <>
+              <span className="note-name">{reading.name}</span>
+              <span className="note-octave">{reading.octave}</span>
+            </>
+          ) : (
+            <span className="note-placeholder">{status === 'listening' ? '···' : '♪'}</span>
+          )}
+        </div>
+
+        {isPreset && (
+          <div className="strings" role="group" aria-label="Strings">
+            {tuning.strings.map((s) => {
+              const isLocked = lockedStringNumber === s.stringNumber
+              const isActive = activeString?.stringNumber === s.stringNumber
+              return (
+                <button
+                  key={s.stringNumber}
+                  type="button"
+                  className={`string ${isActive ? 'active' : ''} ${isLocked ? 'locked' : ''} ${
+                    isActive && inTune ? 'in-tune' : ''
+                  }`}
+                  onClick={() => toggleString(s.stringNumber)}
+                  aria-pressed={isLocked}
+                >
+                  <span className="string-circle">
+                    {s.note}
+                    <span className="string-octave">{s.octave}</span>
+                  </span>
+                  <span className="string-label">{ORDINALS[s.stringNumber]} string</span>
+                </button>
+              )
+            })}
+          </div>
+        )}
+      </main>
+
+      <footer className="tuner-controls">
+        {status === 'listening' ? (
+          <button type="button" className="mic-button stop" onClick={stop}>
+            Stop
+          </button>
+        ) : (
+          <button type="button" className="mic-button" onClick={() => void start()}>
+            Start tuning
+          </button>
+        )}
+        {status === 'error' && (
+          <p className="error" role="alert">
+            Microphone unavailable: {error}
+          </p>
+        )}
+      </footer>
+    </div>
+  )
+}
+
+export default App

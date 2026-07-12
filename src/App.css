@@ -1,0 +1,245 @@
+.tuner {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 1.5rem;
+  gap: 2rem;
+}
+
+/* ---- header ---- */
+
+.tuner-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.tuner-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.tuning-select {
+  padding: 0.45rem 1rem;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.tuning-select:hover {
+  border-color: var(--text-dim);
+}
+
+/* ---- display ---- */
+
+.tuner-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1rem;
+  width: min(100%, 26rem);
+}
+
+.gauge {
+  width: 100%;
+}
+
+.gauge-arc {
+  stroke: var(--border);
+  stroke-width: 2;
+}
+
+.tick {
+  stroke: var(--text-dim);
+  stroke-width: 1.5;
+}
+
+.tick.major {
+  stroke: var(--text);
+  stroke-width: 2;
+}
+
+.needle {
+  transform-origin: 100px 100px;
+  transition: transform 90ms linear;
+}
+
+.needle line {
+  stroke: var(--accent);
+  stroke-width: 3;
+  stroke-linecap: round;
+}
+
+.needle circle {
+  fill: var(--accent);
+}
+
+.needle.in-tune line {
+  stroke: var(--good);
+}
+
+.needle.in-tune circle {
+  fill: var(--good);
+}
+
+.needle.idle {
+  opacity: 0.25;
+}
+
+.note {
+  display: flex;
+  align-items: baseline;
+  min-height: 6rem;
+}
+
+.note-name {
+  font-size: 6rem;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.note.in-tune .note-name {
+  color: var(--good);
+}
+
+.note-octave {
+  font-size: 2.5rem;
+  color: var(--text-dim);
+}
+
+.note-placeholder {
+  font-size: 5rem;
+  color: var(--text-dim);
+  opacity: 0.5;
+  line-height: 1;
+}
+
+/* ---- string selector ---- */
+
+.strings {
+  display: flex;
+  gap: 1.25rem;
+  margin-top: 0.5rem;
+}
+
+.string {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.string-circle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 50%;
+  border: 2px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: 1.4rem;
+  font-weight: 700;
+  transition: border-color 120ms, background 120ms, color 120ms;
+}
+
+.string-octave {
+  font-size: 0.75rem;
+  font-weight: 400;
+  color: var(--text-dim);
+  align-self: flex-end;
+  margin-bottom: 0.55rem;
+}
+
+.string-label {
+  font-size: 0.75rem;
+}
+
+.string:hover .string-circle {
+  border-color: var(--text-dim);
+}
+
+/* Auto-detected: the sound is nearest this string. */
+.string.active .string-circle {
+  border-color: var(--accent);
+}
+
+.string.active .string-label {
+  color: var(--text);
+}
+
+/* Manually locked by clicking. */
+.string.locked .string-circle {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.string.locked .string-octave {
+  color: var(--accent-contrast);
+  opacity: 0.7;
+}
+
+.string.in-tune .string-circle {
+  background: var(--good);
+  border-color: var(--good);
+  color: var(--accent-contrast);
+}
+
+.string.in-tune .string-octave {
+  color: var(--accent-contrast);
+}
+
+/* ---- controls ---- */
+
+.tuner-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mic-button {
+  padding: 0.75rem 2.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border-radius: 999px;
+  border: none;
+  background: var(--accent);
+  color: var(--accent-contrast);
+  cursor: pointer;
+}
+
+.mic-button:hover {
+  filter: brightness(1.1);
+}
+
+.mic-button.stop {
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
+}
+
+.error {
+  color: var(--bad);
+  font-size: 0.9rem;
+  max-width: 24rem;
+  text-align: center;
+  margin: 0;
+}
