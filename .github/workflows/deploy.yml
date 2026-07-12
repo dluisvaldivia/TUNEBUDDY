@@ -17,22 +17,19 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: TUNEBUDDY
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
-          cache-dependency-path: TUNEBUDDY/package-lock.json
+          cache-dependency-path: package-lock.json
       - run: npm ci
       - run: npm test
       - run: npm run build
       - uses: actions/upload-pages-artifact@v3
         with:
-          path: TUNEBUDDY/dist
+          path: dist
 
   deploy:
     needs: build
