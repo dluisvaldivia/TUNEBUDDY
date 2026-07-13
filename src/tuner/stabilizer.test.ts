@@ -36,8 +36,37 @@ describe('PitchStabilizer', () => {
     expect(s.push(293.6)).toBeCloseTo(293.66, 1)
   })
 
-  it('clears on silence', () => {
-    const s = new PitchStabilizer(5, 3, 100)
+  it('holds the last reading through brief silent frames', () => {
+    const s = new PitchStabilizer(5, 3, 100, 4)
+    s.push(440)
+    s.push(440)
+    expect(s.push(440)).toBe(440)
+    // Decaying string dips below the detector's gates: keep the note alive…
+    expect(s.push(null)).toBe(440)
+    expect(s.push(null)).toBe(440)
+    // …and resume live tracking seamlessly when it pokes back above.
+    expect(s.push(441)).not.toBeNull()
+  })
+
+  it('goes silent once the hold runs out', () => {
+    const s = new PitchStabilizer(5, 3, 100, 2)
+    s.push(440)
+    s.push(440)
+    s.push(440)
+    expect(s.push(null)).toBe(440)
+    expect(s.push(null)).toBe(440)
+    expect(s.push(null)).toBeNull() // hold exhausted
+    expect(s.push(440)).toBeNull() // must re-accumulate agreement
+  })
+
+  it('does not hold when nothing stable was being reported', () => {
+    const s = new PitchStabilizer(5, 3, 100, 4)
+    s.push(440) // only one frame — not stable yet
+    expect(s.push(null)).toBeNull()
+  })
+
+  it('clears immediately with holdFrames = 0', () => {
+    const s = new PitchStabilizer(5, 3, 100, 0)
     s.push(440)
     s.push(440)
     s.push(440)

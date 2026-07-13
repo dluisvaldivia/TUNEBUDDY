@@ -5,8 +5,8 @@ Audio API). No backend — designed for static hosting on GitHub Pages.
 
 ## Layout
 
-The actual app lives in [TUNEBUDDY/](TUNEBUDDY/) (a Vite + React + TS
-project). Key source:
+This is a single Vite + React + TS project rooted at the repo root. Key
+source:
 
 - `src/tuner/` — pure TypeScript pitch-detection engine, no UI dependencies:
   `fft.ts`, `pitch.ts` (Hann window → zero-padded FFT → log-domain Harmonic
@@ -19,7 +19,7 @@ project). Key source:
 - `src/App.tsx` / `src/App.css` — the UI: tuning-gauge, note display, preset
   dropdown, clickable string circles.
 
-## Commands (run from `TUNEBUDDY/`)
+## Commands
 
 ```sh
 npm install

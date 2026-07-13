@@ -46,6 +46,6 @@ Microphone access requires a secure context: `localhost` and HTTPS both work.
 ## Deployment
 
 Pushing to `main` triggers the GitHub Actions workflow in
-[.github/workflows/deploy.yml](../.github/workflows/deploy.yml), which builds
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml), which builds
 the app and publishes it to GitHub Pages. In the repository settings, set
 **Pages → Source** to **GitHub Actions** once.

@@ -1,4 +1,4 @@
-import { detectPitch, rms, type PitchOptions } from './pitch'
+import { DEFAULT_PITCH_OPTIONS, detectPitch, rms, type PitchOptions } from './pitch'
 import { frequencyToNote, DEFAULT_A4, type Note } from './notes'
 import { PitchStabilizer } from './stabilizer'
 
@@ -91,7 +91,13 @@ export class TunerEngine {
     this.lastUpdate = now
 
     this.analyser.getFloatTimeDomainData(this.buffer)
-    const raw = detectPitch(this.buffer, this.audioContext.sampleRate, this.options)
+    // Hysteresis: while a note is being tracked, halve the silence gate so
+    // the quiet tail of a decaying string keeps producing live readings.
+    const baseThreshold = this.options.volumeThreshold ?? DEFAULT_PITCH_OPTIONS.volumeThreshold
+    const raw = detectPitch(this.buffer, this.audioContext.sampleRate, {
+      ...this.options,
+      volumeThreshold: this.stabilizer.tracking ? baseThreshold / 2 : baseThreshold,
+    })
     const frequency = this.stabilizer.push(raw)
 
     if (frequency === null) {

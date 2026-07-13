@@ -1,4 +1,16 @@
 node_modules/
 dist/
+dist-ssr/
 *.local
+.env
 .DS_Store
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?

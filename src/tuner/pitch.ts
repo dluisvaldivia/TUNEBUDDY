@@ -19,7 +19,7 @@ export interface PitchOptions {
   minTonality?: number
 }
 
-const DEFAULTS: Required<PitchOptions> = {
+export const DEFAULT_PITCH_OPTIONS: Required<PitchOptions> = {
   minFrequency: 50,
   maxFrequency: 1500,
   harmonics: 5,
@@ -51,7 +51,7 @@ export function detectPitch(
   sampleRate: number,
   options: PitchOptions = {},
 ): number | null {
-  const opts = { ...DEFAULTS, ...options }
+  const opts = { ...DEFAULT_PITCH_OPTIONS, ...options }
   if (samples.length < 2 || rms(samples) < opts.volumeThreshold) {
     return null
   }
