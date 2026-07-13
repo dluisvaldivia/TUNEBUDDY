@@ -1,7 +1,8 @@
-import { useState } from 'react'
+import { useState, type CSSProperties, type MouseEvent } from 'react'
 import { useTuner } from './tuner/useTuner'
 import { midiToFrequency } from './tuner/notes'
 import { centsFrom, nearestString, TUNINGS, type TuningString } from './tuner/tunings'
+import { MetronomeView } from './MetronomeView'
 import './App.css'
 
 const GAUGE_RANGE = 50 // cents shown on each side of center
@@ -44,10 +45,37 @@ function Gauge({ cents }: { cents: number | null }) {
   )
 }
 
+interface Reveal {
+  x: number
+  y: number
+  radius: number
+}
+
 function App() {
   const { status, reading, error, start, stop } = useTuner()
   const [tuningId, setTuningId] = useState('chromatic')
   const [lockedStringNumber, setLockedStringNumber] = useState<number | null>(null)
+  const [reveal, setReveal] = useState<Reveal | null>(null)
+  const [metronomeOpen, setMetronomeOpen] = useState(false)
+  const [metronomeClosing, setMetronomeClosing] = useState(false)
+
+  const openMetronome = (e: MouseEvent<HTMLButtonElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect()
+    const x = rect.left + rect.width / 2
+    const y = rect.top + rect.height / 2
+    // Radius that covers the whole viewport from the button's center.
+    const radius = Math.hypot(
+      Math.max(x, window.innerWidth - x),
+      Math.max(y, window.innerHeight - y),
+    )
+    setReveal({ x, y, radius })
+    // The tuner would otherwise try to read the metronome's beeps.
+    if (status === 'listening') stop()
+    setMetronomeClosing(false)
+    setMetronomeOpen(true)
+  }
+
+  const closeMetronome = () => setMetronomeClosing(true)
 
   const tuning = TUNINGS.find((t) => t.id === tuningId) ?? TUNINGS[0]
   const isPreset = tuning.strings.length > 0
@@ -82,6 +110,9 @@ function App() {
     <div className="tuner">
       <header className="tuner-header">
         <h1>TuneBuddy</h1>
+        <button type="button" className="metronome-button" onClick={openMetronome}>
+          Metronome
+        </button>
         <select
           className="tuning-select"
           value={tuningId}
@@ -158,6 +189,29 @@ function App() {
           </p>
         )}
       </footer>
+
+      {metronomeOpen && reveal && (
+        <div
+          className={`metronome-overlay ${metronomeClosing ? 'closing' : 'open'}`}
+          style={
+            {
+              '--reveal-x': `${reveal.x}px`,
+              '--reveal-y': `${reveal.y}px`,
+              '--reveal-r': `${reveal.radius}px`,
+            } as CSSProperties
+          }
+          onAnimationEnd={(e) => {
+            // Unmount only after the closing animation finishes (which also
+            // disposes the metronome engine and silences it).
+            if (metronomeClosing && e.target === e.currentTarget) {
+              setMetronomeOpen(false)
+              setMetronomeClosing(false)
+            }
+          }}
+        >
+          <MetronomeView onClose={closeMetronome} />
+        </div>
+      )}
     </div>
   )
 }

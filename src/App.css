@@ -26,6 +26,21 @@
   margin: 0;
 }
 
+.metronome-button {
+  padding: 0.45rem 1.25rem;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.metronome-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
 .tuning-select {
   padding: 0.45rem 1rem;
   font-size: 0.9rem;
@@ -242,4 +257,274 @@
   max-width: 24rem;
   text-align: center;
   margin: 0;
+}
+
+/* ---- metronome: circular reveal ---- */
+
+.metronome-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  background: var(--bg);
+  clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+}
+
+/* Open and close must use *different* animation names: browsers only
+   restart a CSS animation when animation-name changes, so reusing one set
+   of keyframes with `reverse` snaps instead of animating after first run. */
+.metronome-overlay.open {
+  animation: reveal-in 480ms ease-out both;
+}
+
+.metronome-overlay.closing {
+  /* ease-out, not ease-in: a slow start on a viewport-sized circle reads
+     as a pause before anything visibly moves. */
+  animation: reveal-out 400ms ease-out both;
+}
+
+@keyframes reveal-in {
+  from {
+    clip-path: circle(0px at var(--reveal-x) var(--reveal-y));
+  }
+  to {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+@keyframes reveal-out {
+  from {
+    clip-path: circle(var(--reveal-r) at var(--reveal-x) var(--reveal-y));
+  }
+  to {
+    clip-path: circle(0px at var(--reveal-x) var(--reveal-y));
+  }
+}
+
+/* ---- metronome: view ---- */
+
+.metronome {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 2rem 1.5rem;
+  gap: 2rem;
+}
+
+/* Mirrors .tuner-header so the Tuner button occupies the same spot the
+   Metronome button has on the tuner screen. */
+.metronome-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.metronome-header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin: 0;
+}
+
+.back-button {
+  padding: 0.45rem 1.25rem;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  cursor: pointer;
+}
+
+.back-button:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.metronome-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1.75rem;
+  width: min(100%, 26rem);
+}
+
+.pulse-circle {
+  width: 15rem;
+  height: 15rem;
+  border-radius: 50%;
+  border: 3px solid var(--border);
+  background: var(--surface);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+}
+
+.pulse-circle.beat {
+  animation: pulse 260ms ease-out both;
+  border-color: var(--text-dim);
+}
+
+.pulse-circle.beat.accent {
+  animation: pulse-accent 260ms ease-out both;
+  border-color: var(--accent);
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1.05);
+    box-shadow: 0 0 0 0 rgba(139, 147, 165, 0.45);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 1.5rem rgba(139, 147, 165, 0);
+  }
+}
+
+@keyframes pulse-accent {
+  0% {
+    transform: scale(1.09);
+    box-shadow: 0 0 0 0 rgba(232, 163, 61, 0.55);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 2rem rgba(232, 163, 61, 0);
+  }
+}
+
+.bpm-value {
+  font-size: 4.5rem;
+  font-weight: 700;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.bpm-unit {
+  font-size: 0.9rem;
+  letter-spacing: 0.2em;
+  color: var(--text-dim);
+}
+
+.beat-dots {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  min-height: 0.9rem;
+}
+
+.beat-dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  border-radius: 50%;
+  background: var(--border);
+  transition: background 80ms, transform 80ms;
+}
+
+.beat-dot.accent {
+  width: 0.9rem;
+  height: 0.9rem;
+}
+
+.beat-dot.current {
+  background: var(--text);
+  transform: scale(1.2);
+}
+
+.beat-dot.accent.current {
+  background: var(--accent);
+}
+
+.bpm-controls {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  width: 100%;
+}
+
+.bpm-controls button {
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  font-size: 1.2rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.bpm-controls button:hover:not(:disabled) {
+  background: var(--surface);
+}
+
+.bpm-controls button:disabled {
+  opacity: 0.3;
+  cursor: default;
+}
+
+.bpm-controls input[type='range'] {
+  flex: 1;
+  accent-color: var(--accent);
+}
+
+.measure-select {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.measure-select button {
+  padding: 0.4rem 0.9rem;
+  font-size: 0.9rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.measure-select button:hover {
+  border-color: var(--text-dim);
+}
+
+.measure-select button.selected {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.metronome-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.mute-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text-dim);
+  cursor: pointer;
+}
+
+.mute-button:hover {
+  color: var(--text);
+  border-color: var(--text-dim);
+}
+
+.mute-button.muted {
+  color: var(--accent);
+  border-color: var(--accent);
 }

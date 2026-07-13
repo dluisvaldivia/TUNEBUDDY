@@ -16,8 +16,11 @@ source:
   e.g. ukulele standard gCEA), `audioInput.ts` (mic capture via
   `getUserMedia`/`AnalyserNode`), `useTuner.ts` (React hook — the only
   surface the UI touches).
+- `src/metronome/` — Web Audio metronome engine (`metronome.ts`, lookahead
+  scheduler with accented beat-1 beep) and its React hook (`useMetronome.ts`).
 - `src/App.tsx` / `src/App.css` — the UI: tuning-gauge, note display, preset
-  dropdown, clickable string circles.
+  dropdown, clickable string circles, and the circular-reveal overlay that
+  opens `src/MetronomeView.tsx` (pulsing beat circle, BPM/measure controls).
 
 ## Commands
 
