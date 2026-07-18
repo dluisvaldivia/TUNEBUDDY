@@ -85,6 +85,45 @@
   stroke-width: 2;
 }
 
+/* Directional hint (preset mode): a streak of light repeatedly sweeps along
+   the outside of the arc, from center toward the side the needle must move.
+   pathLength=100 on the path lets the dash math use normalized units. */
+.pulse-light {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  stroke-dasharray: 30 170;
+  filter: drop-shadow(0 0 5px var(--accent));
+  animation: light-sweep 1100ms ease-out infinite;
+}
+
+@keyframes light-sweep {
+  0% {
+    stroke-dashoffset: 30;
+    opacity: 0;
+  }
+  12% {
+    opacity: 0.95;
+  }
+  60% {
+    opacity: 0.55;
+  }
+  100% {
+    stroke-dashoffset: -100;
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pulse-light {
+    animation: none;
+    /* Park the streak mid-arc on the target side as a static hint. */
+    stroke-dashoffset: -35;
+    opacity: 0.6;
+  }
+}
+
 .needle {
   transform-origin: 100px 100px;
   transition: transform 90ms linear;

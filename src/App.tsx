@@ -10,7 +10,16 @@ const IN_TUNE_CENTS = 5
 
 const ORDINALS: Record<number, string> = { 1: '1st', 2: '2nd', 3: '3rd', 4: '4th', 5: '5th', 6: '6th' }
 
-function Gauge({ cents }: { cents: number | null }) {
+type PulseDirection = 'left' | 'right'
+
+// Arcs just outside the gauge arc (r=98), from top center to each ±60° edge,
+// traced center-outward so the dash animation travels toward that side.
+const PULSE_ARCS: Record<PulseDirection, string> = {
+  right: 'M 100 2 A 98 98 0 0 1 184.9 51',
+  left: 'M 100 2 A 98 98 0 0 0 15.1 51',
+}
+
+function Gauge({ cents, pulse }: { cents: number | null; pulse: PulseDirection | null }) {
   // Map −50…+50 cents onto a −60°…+60° needle sweep.
   const clamped = Math.max(-GAUGE_RANGE, Math.min(GAUGE_RANGE, cents ?? 0))
   const angle = (clamped / GAUGE_RANGE) * 60
@@ -34,6 +43,10 @@ function Gauge({ cents }: { cents: number | null }) {
     <svg className="gauge" viewBox="0 0 200 110" role="img" aria-label="Tuning gauge">
       <path className="gauge-arc" d="M 20.3 53.5 A 92 92 0 0 1 179.7 53.5" fill="none" />
       {ticks}
+      {pulse && (
+        // key restarts the sweep from the center when the direction flips
+        <path key={pulse} className="pulse-light" d={PULSE_ARCS[pulse]} pathLength={100} />
+      )}
       <g
         className={`needle ${cents === null ? 'idle' : ''} ${inTune ? 'in-tune' : ''}`}
         style={{ transform: `rotate(${angle}deg)` }}
@@ -97,6 +110,11 @@ function App() {
 
   const inTune = cents !== null && Math.abs(cents) <= IN_TUNE_CENTS
 
+  // Preset mode only: flat means the pitch must rise (needle should move
+  // right), sharp means it must fall. Chromatic mode has no target string.
+  const pulseDirection: PulseDirection | null =
+    isPreset && cents !== null && !inTune ? (cents < 0 ? 'right' : 'left') : null
+
   const selectTuning = (id: string) => {
     setTuningId(id)
     setLockedStringNumber(null)
@@ -128,7 +146,7 @@ function App() {
       </header>
 
       <main className="tuner-display">
-        <Gauge cents={cents} />
+        <Gauge cents={cents} pulse={pulseDirection} />
 
         <div className={`note ${inTune ? 'in-tune' : ''}`}>
           {activeString ? (
