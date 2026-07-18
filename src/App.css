@@ -6,6 +6,7 @@
   justify-content: space-between;
   padding: 2rem 1.5rem;
   gap: 2rem;
+  overflow-y: auto;
 }
 
 /* ---- header ---- */
@@ -303,13 +304,14 @@
 /* ---- metronome: view ---- */
 
 .metronome {
-  height: 100%;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
   padding: 2rem 1.5rem;
   gap: 2rem;
+  overflow-y: auto;
 }
 
 /* Mirrors .tuner-header so the Tuner button occupies the same spot the
@@ -528,3 +530,123 @@
   color: var(--accent);
   border-color: var(--accent);
 }
+
+/* ---- small / short screens ---- */
+
+@media (max-width: 420px) {
+  .tuner,
+  .metronome {
+    padding: 1.25rem 1rem;
+    gap: 1.25rem;
+  }
+
+  .note-name {
+    font-size: 4.5rem;
+  }
+
+  .note-octave {
+    font-size: 2rem;
+  }
+
+  .note-placeholder {
+    font-size: 4rem;
+  }
+
+  .strings {
+    gap: 0.75rem;
+  }
+
+  .string-circle {
+    width: 2.75rem;
+    height: 2.75rem;
+    font-size: 1.2rem;
+  }
+
+  .pulse-circle {
+    width: 11rem;
+    height: 11rem;
+  }
+
+  .bpm-value {
+    font-size: 3.25rem;
+  }
+}
+
+@media (max-height: 700px) {
+  .tuner,
+  .metronome {
+    justify-content: flex-start;
+    padding-top: 0.75rem;
+    padding-bottom: 0.75rem;
+    gap: 1.5rem;
+  }
+
+  .tuner-header,
+  .metronome-header {
+    gap: 0.4rem;
+  }
+
+  .tuner-controls,
+  .metronome-controls {
+    margin-top: auto;
+    padding-top: 1rem;
+  }
+
+  .note {
+    min-height: 4rem;
+  }
+
+  .note-name {
+    font-size: 4rem;
+  }
+
+  .note-octave {
+    font-size: 1.75rem;
+  }
+
+  .note-placeholder {
+    font-size: 3.5rem;
+  }
+
+  .pulse-circle {
+    width: 10rem;
+    height: 10rem;
+  }
+
+  .bpm-value {
+    font-size: 3rem;
+  }
+
+  .metronome-display {
+    gap: 0.9rem;
+  }
+
+  .bpm-controls,
+  .measure-select {
+    margin: 0;
+  }
+}
+
+@media (max-height: 560px) {
+  .pulse-circle {
+    width: 7.5rem;
+    height: 7.5rem;
+  }
+
+  .bpm-value {
+    font-size: 2.25rem;
+  }
+
+  .bpm-unit {
+    font-size: 0.7rem;
+  }
+
+  .note-name {
+    font-size: 3rem;
+  }
+
+  .note {
+    min-height: 3rem;
+  }
+}
+
