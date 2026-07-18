@@ -4,7 +4,7 @@ Visit the app: [TuneBuddy](https://dluisvaldivia.github.io/TUNEBUDDY)
 
 A chromatic instrument tuner that runs entirely in your browser. Point your
 microphone at a guitar (or any instrument), and TuneBuddy shows the nearest
-note, how many cents sharp or flat you are, and the exact frequency.
+note.
 
 The pitch-detection approach is inspired by
 [TomSchimansky/GuitarTuner](https://github.com/TomSchimansky/GuitarTuner)
@@ -44,10 +44,3 @@ npm run preview  # serve the production build locally
 ```
 
 Microphone access requires a secure context: `localhost` and HTTPS both work.
-
-## Deployment
-
-Pushing to `main` triggers the GitHub Actions workflow in
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml), which builds
-the app and publishes it to GitHub Pages. In the repository settings, set
-**Pages → Source** to **GitHub Actions** once.
