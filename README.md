@@ -1,5 +1,7 @@
 # TuneBuddy
 
+Visit the app: [TuneBuddy](https://dluisvaldivia.github.io/TUNEBUDDY)
+
 A chromatic instrument tuner that runs entirely in your browser. Point your
 microphone at a guitar (or any instrument), and TuneBuddy shows the nearest
 note, how many cents sharp or flat you are, and the exact frequency.
