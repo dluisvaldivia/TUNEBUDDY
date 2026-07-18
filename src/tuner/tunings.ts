@@ -22,6 +22,18 @@ export const TUNINGS: Tuning[] = [
     strings: [],
   },
   {
+    id: 'guitar-standard',
+    label: 'Guitar — Standard (EADGBE)',
+    strings: [
+      { stringNumber: 6, note: 'E', octave: 2, midi: 40 },
+      { stringNumber: 5, note: 'A', octave: 2, midi: 45 },
+      { stringNumber: 4, note: 'D', octave: 3, midi: 50 },
+      { stringNumber: 3, note: 'G', octave: 3, midi: 55 },
+      { stringNumber: 2, note: 'B', octave: 3, midi: 59 },
+      { stringNumber: 1, note: 'E', octave: 4, midi: 64 },
+    ],
+  },
+  {
     id: 'ukulele-standard',
     label: 'Ukulele — Standard (gCEA)',
     strings: [
